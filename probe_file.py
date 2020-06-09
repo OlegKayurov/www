@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-#import pprint
+
 
 
 
@@ -11,7 +11,7 @@ def adress(html):
     list_f = html.find_all('span', {'class': 'inline-stocks__value_inner'})
     for k, v in zip(list_f, list_v):
         print(k.text, v.text)
-        #pprint.pprint(k.text, v.text)
+
 
 def main():
     adress('https://yandex.ru/')
