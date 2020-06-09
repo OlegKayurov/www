@@ -1,9 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
-
-
-
+# Currency parser
 def adress(html):
     response = requests.get(html)
     html = BeautifulSoup(response.text, 'html.parser')
