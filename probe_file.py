@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
-# prob
-# Currency parser
+
+
 def adress(html):
     response = requests.get(html).text
     html = BeautifulSoup(response, 'lxml')
