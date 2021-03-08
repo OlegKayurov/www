@@ -63,7 +63,7 @@ def save_scv(cur, con):
         else:
             df.to_csv(f, header=False)
 
-    # Clean up
+
     f.close()
     cur.close()
     con.commit()
