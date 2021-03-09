@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup as bs
 import mysql.connector as sql
 import string
 import pandas as pd
-import os
+
 
 #добавление записей в БД
 def save(cur, con, link, brend1, form_price):
@@ -24,11 +24,12 @@ def view_all(cur):
     for i in iter(cur):
         print(i)
 
-#Фильтрация товара по бренду
+#Фильтрация товара по бренду и сохранение в csv
 def filtr(cur):
     i = input('Введите бренд: ')
     cur.execute(f"""select * from Parsing where brends='{i}'""")
-    f = open("filtr.csv", "w")
+    f = open(f"{i}.csv", "w")
+    #file = 'filtr.csv'
     # Get data in batches
     while True:
         # Read the data
