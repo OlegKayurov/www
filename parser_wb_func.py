@@ -4,18 +4,16 @@ from bs4 import BeautifulSoup as bs
 import mysql.connector as sql
 import string
 import pandas as pd
+import os
 
 #добавление записей в БД
 def save(cur, con, link, brend1, form_price):
-
     cur.execute(f""" INSERT INTO Parsing(links, brends, prices) VALUES('{link}', '{brend1}', '{form_price}') """)
     print(f"{'-'*10}\nData added.\n{'-'*10}")
-
     con.commit()
 
 #Удаление записей
 def delete(cur, con):
-    #cur.execute("""DELETE FROM Parsing WHERE id=id""")
     cur.execute("""DROP TABLE Parsing""")
     con.commit()
     print(f"{'-' * 10}\nRecording remowed.\n{'-' * 10}")
@@ -28,12 +26,9 @@ def view_all(cur):
 
 #Фильтрация товара по бренду
 def filtr(cur):
-
     i = input('Введите бренд: ')
-
     cur.execute(f"""select * from Parsing where brends='{i}'""")
-
-    f = open("Filtr.txt", "w")
+    f = open("filtr.csv", "w")
     # Get data in batches
     while True:
         # Read the data
@@ -44,26 +39,21 @@ def filtr(cur):
         # Let's write to the file
         else:
             df.to_csv(f, header=False)
-
     # Clean up
     f.close()
 
 
+
 #запись данных в csv файл
 def save_scv(cur, con):
-
-    f = open('output.txt', 'w')
-
+    f = open('save_all_data.csv', 'w')
     cur.execute('select * from Parsing')
-
     while True:
         df = pd.DataFrame(cur.fetchmany(1000))
         if len(df) == 0:
             break
         else:
             df.to_csv(f, header=False)
-
-
     f.close()
     cur.close()
     con.commit()
@@ -86,7 +76,6 @@ def main():
                     '"View full list" - F\n'
                     '"Filtr" - I\n'
                     '"Save to Excel" - E\n'
-                    
                     '"Exit" - Q\n').lower()
         if act == 'a':
             while True:
