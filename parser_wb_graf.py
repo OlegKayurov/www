@@ -11,7 +11,7 @@ class ExampleApp(QtWidgets.QMainWindow, parser_wb.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-
+        self.start()
         self.pushButton.clicked.connect(self.parser_and_add_base)
         self.pushButton_2.clicked.connect(self.view_all)
         self.pushButton_3.clicked.connect(self.open_dell)
@@ -19,14 +19,7 @@ class ExampleApp(QtWidgets.QMainWindow, parser_wb.Ui_MainWindow):
         self.pushButton_5.clicked.connect(self.print)
 
     def parser_and_add_base(self):
-        self.con = sql.connect(host='localhost', user='root', password='root', database='datapars')
-        self.cur = self.con.cursor()
-        # Создание таблицы если ее нет
-        self.cur.execute("""CREATE TABLE IF NOT EXISTS Parsing (id int(50) not null auto_increment primary key,
-                            links varchar(100), 
-                            brends varchar(100),
-                            prices varchar(100))""")
-        self.con.commit()
+
         self.url = 'https://www.wildberries.ru/catalog/obuv/muzhskaya/kedy-i-krossovki'
         self.r = requests.get(self.url).text
         self.soup = bs(self.r, 'lxml')
@@ -86,6 +79,15 @@ class ExampleApp(QtWidgets.QMainWindow, parser_wb.Ui_MainWindow):
         dialog = Delete()
         dialog.exec_()
 
+    def start(self):
+        self.con = sql.connect(host='localhost', user='root', password='root', database='datapars')
+        self.cur = self.con.cursor()
+        # Создание таблицы если ее нет
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS Parsing (id int(50) not null auto_increment primary key,
+                                    links varchar(100), 
+                                    brends varchar(100),
+                                    prices varchar(100))""")
+        self.con.commit()
 
 class Delete(QtWidgets.QDialog, dell.Ui_Dialog):
     def __init__(self):
@@ -110,5 +112,5 @@ def main():
 
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
     main()
