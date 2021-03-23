@@ -10,6 +10,7 @@ pg = "?page="
 seet = set()
 #fail = 'ff.txt'
 
+
 def handler():
     image_number = 0
     nomer = 0
