@@ -1,0 +1,69 @@
+import requests
+from flask import Flask, render_template, request
+import mysql.connector as sql
+from bs4 import BeautifulSoup as bs
+import string
+
+app = Flask(__name__)
+
+@app.route('/index/')
+def home():
+    return render_template("index.html")
+
+@app.route('/index/1/', methods=['POST', 'GET'])
+def parsing():
+    con = sql.connect(host='localhost', user='root', password='root', database='datapars')
+    cur = con.cursor()
+    #Создание таблицы если ее нет
+    cur.execute("""CREATE TABLE IF NOT EXISTS Parsing (id int(50) not null auto_increment primary key,
+    links varchar(100),
+    brends varchar(100),
+    prices varchar(100))""")
+    con.commit()
+    url = 'https://www.wildberries.ru/catalog/obuv/muzhskaya/kedy-i-krossovki'
+    r = requests.get(url).text
+    soup = bs(r, 'lxml')
+    links = soup.find('div', class_='catalog_main_table j-products-container')
+    all_links = links.find_all('div', class_='dtList i-dtList j-card-item')
+    for i in all_links:
+        link = f"{'https://www.wildberries.ru'}{i.find('a').get('href')}"
+        brend = i.find('strong', class_='brand-name c-text-sm').text
+        brend1 = brend.replace('/', '').replace(' ', '')
+        price = i.find('span', class_='price').text
+        #price2 = price.replace('\n', '')
+        valid_characters = string.printable
+        start_string = f"{price}"
+        price2 = ''.join(i for i in start_string if i in valid_characters).replace('\n', '')
+        valid_characters = string.printable
+        start_string = f"{price2}"
+        end_string = ''.join(i for i in start_string if i in valid_characters)
+        form_price = f'new price- {end_string[0:5]}P, old price- {end_string[5:10]}P,' \
+                     f' discount {end_string[10:]}'
+        cur.execute(f""" INSERT INTO Parsing(links, brends, prices) VALUES('{link}', '{brend1}', '{form_price}') """)
+        con.commit()
+    return render_template("index.html")
+
+@app.route('/index/2/', methods=['POST', 'GET'])
+def view_all():
+    con = sql.connect(host='localhost', user='root', password='root', database='datapars')
+    cur = con.cursor()
+    spisp = []
+    cur.execute("""select * from Parsing""")
+    for i in iter(cur):
+        spisp.append(f"{i[1]}{'-' * 5}{i[2]}{'-' * 5}{i[3]}")
+    return render_template('index.html', spisp=spisp)
+
+@app.route('/index/3/', methods=['POST'])
+def filtr():
+    con = sql.connect(host='localhost', user='root', password='root', database='datapars')
+    cur = con.cursor()
+    spisp = []
+    if request.method == 'POST':
+        name = request.form.get('filtr')
+        spisp.append(name)
+        cur.execute(f"""select * from Parsing where brends='{name}'""")
+        for i in iter(cur):
+            spisp.append(f"{i[1]}{'-' * 5}{i[2]}{'-' * 5}{i[3]}")
+    return render_template('index.html', spisp=spisp)
+
+app.run(debug=True)

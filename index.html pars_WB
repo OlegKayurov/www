@@ -1,0 +1,37 @@
+<!doctype html>
+<title>Hello from Flask</title>
+{% if name %}
+  <h1>Hello {{ name }}!</h1>
+
+{% else %}
+  <h1>Парсинг</h1>
+<form action="/index/">
+  <p>
+    <textarea rows="30" cols="150">
+    {{spisp}}
+    </textarea>
+    <input type="submit" value="Очистить">
+  </p>
+</form>
+
+<form action="/index/3/" method="POST">
+  <p><label for="filtr">Фильтр</label>
+    <input type="text" name="filtr">
+   <input type="hidden" name="filtr" value="3">
+    <input type="submit" value="Фильтр"></p>
+
+</form>
+
+<form action="/index/1/" method="POST">
+  <p>
+  <input type="hidden" name="parser" value="1">
+  <input type="submit" value="Парсинг">
+  </p>
+</form>
+
+<form action="/index/2/" method="POST">
+  <input type="hidden" name="view_all" value="2">
+  <input type="submit" value="Вывод">
+</form>
+
+{% endif %}
